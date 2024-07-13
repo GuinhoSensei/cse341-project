@@ -1,8 +1,11 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
+const passport = require('passport');
+const session = require('express-session');
 
 dotenv.config();
+require('./config/passport'); // Include passport configuration
 
 const app = express();
 
@@ -12,9 +15,23 @@ connectDB();
 // Init Middleware
 app.use(express.json({ extended: false }));
 
+// Express Session Middleware
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+}));
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Define Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
+app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/comments', require('./routes/commentRoutes'));
+app.use('/auth', require('./routes/oauthRoutes'));
 
 const PORT = process.env.PORT || 5000;
 
