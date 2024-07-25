@@ -1,3 +1,7 @@
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const express = require('express');
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
@@ -28,8 +32,9 @@ app.use(passport.session());
 
 // Define Routes
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/tasks', require('./routes/taskRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/comments', require('./routes/commentRoutes'));
 app.use('/auth', require('./routes/oauthRoutes'));
 

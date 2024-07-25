@@ -1,11 +1,11 @@
 const Comment = require('../models/Comment');
 
 exports.createComment = async (req, res) => {
-  const { projectId, text } = req.body;
+  const { taskId, comment } = req.body;
   try {
-    const comment = new Comment({ projectId, text });
-    await comment.save();
-    res.status(201).json(comment);
+    const newComment = new Comment({ taskId, comment, commentedBy: req.user.id });
+    await newComment.save();
+    res.status(201).json(newComment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -23,9 +23,7 @@ exports.getComments = async (req, res) => {
 exports.getComment = async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
-    if (!comment) {
-      return res.status(404).json({ error: 'Comment not found' });
-    }
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
     res.json(comment);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -35,9 +33,7 @@ exports.getComment = async (req, res) => {
 exports.updateComment = async (req, res) => {
   try {
     const comment = await Comment.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!comment) {
-      return res.status(404).json({ error: 'Comment not found' });
-    }
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
     res.json(comment);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -47,9 +43,7 @@ exports.updateComment = async (req, res) => {
 exports.deleteComment = async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
-    if (!comment) {
-      return res.status(404).json({ error: 'Comment not found' });
-    }
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
     await comment.remove();
     res.json({ message: 'Comment removed' });
   } catch (err) {

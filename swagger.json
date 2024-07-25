@@ -1,0 +1,61 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Project Management API",
+      "description": "API documentation for the Project Management API"
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "schemes": ["http"],
+    "paths": {
+      "/api/projects": {
+        "get": {
+          "summary": "Get all projects",
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Project"
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Create a new project",
+          "parameters": [
+            {
+              "name": "project",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Project"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Project created"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Project": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+  

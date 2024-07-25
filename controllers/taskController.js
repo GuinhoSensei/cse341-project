@@ -1,9 +1,9 @@
 const Task = require('../models/Task');
 
 exports.createTask = async (req, res) => {
-  const { title, description, dueDate } = req.body;
+  const { projectId, title, description, status, dueDate, assignedTo } = req.body;
   try {
-    const task = new Task({ user: req.user.id, title, description, dueDate });
+    const task = new Task({ projectId, title, description, status, dueDate, assignedTo });
     await task.save();
     res.status(201).json(task);
   } catch (err) {
@@ -13,40 +13,37 @@ exports.createTask = async (req, res) => {
 
 exports.getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.user.id });
+    const tasks = await Task.find();
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-exports.updateTask = async (req, res) => {
-  const { id } = req.params;
+exports.getTask = async (req, res) => {
   try {
-    const task = await Task.findById(id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-    if (task.user.toString() !== req.user.id) {
-      return res.status(401).json({ error: 'Not authorized' });
-    }
-    const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true });
-    res.json(updatedTask);
+    const task = await Task.findById(req.params.id);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    res.json(task);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.updateTask = async (req, res) => {
+  try {
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    res.json(task);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
 exports.deleteTask = async (req, res) => {
-  const { id } = req.params;
   try {
-    const task = await Task.findById(id);
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
-    if (task.user.toString() !== req.user.id) {
-      return res.status(401).json({ error: 'Not authorized' });
-    }
+    const task = await Task.findById(req.params.id);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
     await task.remove();
     res.json({ message: 'Task removed' });
   } catch (err) {
